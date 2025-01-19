@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <!-- Form Section -->
+<div class="bg-white p-6 rounded-lg shadow-md">
+    <a href="{{ url_for('view_users') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Back to users</a>
+    <br><br>
+    <h3 class="text-lg font-semibold mb-4">Edit user</h3>
+{% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="space-y-4">
+                    {% for category, message in messages %}
+                        <div class="p-4 rounded-lg text-white
+                            {% if category == 'success' %}
+                                bg-green-500
+                            {% elif category == 'error' %}
+                                bg-red-500
+                            {% else %}
+                                bg-red-500
+                            {% endif %}
+                        ">
+                            <p>{{ message }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}<br>
+    {% if user %}
+    <form class="space-y-4" method="post">
+        <input type="text" value="{{ user[1] }}" placeholder="Enter full name" name="fullname" class="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200" required>
+        <input type="text" value="{{ user[2] }}" placeholder="Enter username" name="username" class="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200" required>
+        <input type="email" value="{{ user[3] }}" placeholder="Enter email" name="email" class="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200" required>
+        <input type="password"  placeholder="Enter password" name="password" class="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200" required>
+        <select required name="notify" class="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200">
+            <option value="">About notification</option>
+            <option value="1">Has can notify</option>
+            <option value="0">Has can't notify</option>
+        </select>
+        <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">Edit user</button>
+    </form>
+    {% endif %}
+</div>
+{% endblock content %}

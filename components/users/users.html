@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="bg-white p-6 rounded-lg shadow-md">
+    <a href="{{ url_for('add_user') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Add user</a>
+    <br><br>
+    <h3 class="text-lg font-semibold mb-4">Users</h3>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="space-y-4">
+                {% for category, message in messages %}
+                    <div class="p-4 rounded-lg text-white
+                        {% if category == 'success' %}
+                            bg-green-500
+                        {% elif category == 'error' %}
+                            bg-red-500
+                        {% else %}
+                            bg-red-500
+                        {% endif %}
+                    ">
+                        <p>{{ message }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    <br>
+    <div class="overflow-y-auto h-full pb-20"> <!-- Add scrollable container -->
+        <table class="w-full border-collapse border border-gray-200">
+            <thead>
+                <tr class="bg-gray-100">
+                    <th class="p-4 border border-gray-200 text-left">#</th>
+                    <th class="p-4 border border-gray-200 text-left">Full name</th>
+                    <th class="p-4 border border-gray-200 text-left">Username</th>
+                    <th class="p-4 border border-gray-200 text-left">Email</th>
+                    <th class="p-4 border border-gray-200 text-left">Notify</th>
+                    <th class="p-4 border border-gray-200 text-left">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td class="p-4 border border-gray-200">{{ loop.index }}</td>
+                        <td class="p-4 border border-gray-200">{{ user[1] }}</td>
+                        <td class="p-4 border border-gray-200">{{ user[2] }}</td>
+                        <td class="p-4 border border-gray-200">{{ user[3] }}</td>
+                        <td class="p-4 border border-gray-200">
+                            {% if user[5]==0 %}
+                            <p class="bg-red-500 text-center text-white rounded-full">User can't notify</p>
+                            {% elif user[5]==1 %}
+                            <p class="bg-green-500 text-center text-white rounded-full">User can notify</p>
+                            {% endif %}
+                        </td>
+                        <td class="p-4 border border-gray-200">
+                            <div class="relative inline-block text-left">
+                                <button id="dropdown-button-{{ user[0] }}" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none" type="button">
+                                    Actions <i class="fa-solid fa-chevron-down ml-2"></i>
+                                </button>
+                                <div id="dropdown-menu-{{ user[0] }}" class="hidden origin-top-right absolute left-0 mt-2 w-36 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                                    <div class="py-1">
+                                        <a href="/edit-user/{{ user[0] }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                            <i class="fa-solid fa-pen mr-2 text-green-600"></i> Edit
+                                        </a>
+                                        <a href="/delete-user/{{ user[0] }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                            <i class="fa-solid fa-trash mr-2 text-red-600"></i> Delete
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    // Function to toggle dropdown visibility
+    document.querySelectorAll('[id^="dropdown-button-"]').forEach(button => {
+        const userId = button.id.split('-').pop(); // Extract user ID
+        const dropdownMenu = document.getElementById(`dropdown-menu-${userId}`);
+
+        // Toggle dropdown visibility on button click
+        button.addEventListener('click', () => {
+            dropdownMenu.classList.toggle('hidden'); // Show/Hide dropdown
+        });
+    });
+</script>
+
+{% endblock content %}

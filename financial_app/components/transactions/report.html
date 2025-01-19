@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="bg-white p-6 rounded-lg shadow-md">
+    <h2 class="text-lg font-bold mb-4">Transaction Report</h2>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="space-y-4">
+                    {% for category, message in messages %}
+                        <div class="p-4 rounded-lg text-white
+                            {% if category == 'success' %}
+                                bg-green-500
+                            {% elif category == 'error' %}
+                                bg-red-500
+                            {% else %}
+                                bg-red-500
+                            {% endif %}
+                        ">
+                            <p>{{ message }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+    <br>
+    <form method="GET" action="/report">
+        <label for="start_date">Start Date:</label>
+        <input type="date" id="start_date" name="start_date" value="{{ start_date or '' }}">
+        <label for="end_date">End Date:</label>
+        <input type="date" id="end_date" name="end_date" value="{{ end_date or '' }}">
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Search</button>
+    </form>
+    <br>
+    <a href="/download_pdf?start_date={{ start_date or '' }}&end_date={{ end_date or '' }}" 
+       class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">Download PDF</a>
+    <br><br>
+    <table class="w-full border-collapse border border-gray-200">
+        <thead>
+            <tr class="bg-gray-100">
+                <th class="p-4 border border-gray-200">ID</th>
+                <th class="p-4 border border-gray-200">Name</th>
+                <th class="p-4 border border-gray-200">Account</th>
+                <th class="p-4 border border-gray-200">Receiver</th>
+                <th class="p-4 border border-gray-200">Type</th>
+                <th class="p-4 border border-gray-200">Amount</th>
+                <th class="p-4 border border-gray-200">Description</th>
+                <th class="p-4 border border-gray-200">Date</th>
+                <th class="p-4 border border-gray-200">Category</th>
+                <th class="p-4 border border-gray-200">Subcategory</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaction in transactions %}
+            <tr>
+                <td class="p-4 border border-gray-200">{{ loop.index }}</td>
+                <td class="p-4 border border-gray-200">{{ transaction[1] }}</td>
+                <td class="p-4 border border-gray-200">{{ transaction[2] }}</td>
+                <td class="p-4 border border-gray-200">{{ transaction[3] }}</td>
+                <td class="p-4 border border-gray-200">{{ transaction[4] }}</td>
+                <td class="p-4 border border-gray-200">{{ transaction[5] }}</td>
+                <td class="p-4 border border-gray-200">{{ transaction[6] }}</td>
+                <td class="p-4 border border-gray-200">{{ transaction[7] }}</td>
+                <td class="p-4 border border-gray-200">{{ transaction[9] }}</td>
+                <td class="p-4 border border-gray-200">{{ transaction[8] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}

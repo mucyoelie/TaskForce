@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="bg-white p-6 rounded-lg shadow-md">
+    <a href="{{ url_for('add_subcategory') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Add sub category</a>
+<br><br>
+    <h3 class="text-lg font-semibold mb-4">Sub Categories</h3>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="space-y-4">
+                    {% for category, message in messages %}
+                        <div class="p-4 rounded-lg text-white
+                            {% if category == 'success' %}
+                                bg-green-500
+                            {% elif category == 'error' %}
+                                bg-red-500
+                            {% else %}
+                                bg-red-500
+                            {% endif %}
+                        ">
+                            <p>{{ message }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}<br>
+     <table class="w-full border-collapse border border-gray-200">
+        <thead>
+
+            <tr class="bg-gray-100">
+                <th class="p-4 border border-gray-200 text-left">#</th>
+                <th class="p-4 border border-gray-200 text-left">Category Name</th>
+                <th class="p-4 border border-gray-200 text-left">Sub Category Name</th>
+                <th class="p-4 border border-gray-200 text-left">Description</th>
+                <th class="p-4 border border-gray-200 text-left">Data created</th>
+                <th class="p-4 border border-gray-200 text-left">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sub_cat in sub_categories %}
+                <tr>
+                    <td class="p-4 border border-gray-200">{{ loop.index }}</td>
+                    <td class="p-4 border border-gray-200">{{ sub_cat[1] }}</td>
+                    <td class="p-4 border border-gray-200">{{ sub_cat[2] }}</td>
+                    <td class="p-4 border border-gray-200">{{ sub_cat[3] }}</td>
+                    <td class="p-4 border border-gray-200">{{ sub_cat[4] }}</td>
+                    <td class="p-4 border border-gray-200">
+                        <a href="/subcategory/edit/{{ sub_cat[0] }}" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">Edit</a>
+                        <a href="/subcategory/delete/{{ sub_cat[0] }}" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">Edit</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}

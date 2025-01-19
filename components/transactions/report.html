@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="bg-white p-6 rounded-lg shadow-md">
+    <h2 class="text-lg font-bold mb-4">Transaction Report</h2>
+
+    <!-- Search Form with Date Range -->
+    <form method="GET" action="/report" class="mb-6 flex items-center space-x-4">
+        <div class="flex flex-col">
+            <label for="start_date" class="text-sm font-medium text-gray-700">Start Date</label>
+            <input type="date" id="start_date" name="start_date" value="{{ start_date or '' }}"
+                   class="mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <div class="flex flex-col">
+            <label for="end_date" class="text-sm font-medium text-gray-700">End Date</label>
+            <input type="date" id="end_date" name="end_date" value="{{ end_date or '' }}"
+                   class="mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <div class="flex flex-col">
+            <label class="text-transparent">Search</label>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            Search
+        </button></div>
+    </form>
+
+    <!-- Download Button -->
+    <a href="/download_pdf?start_date={{ start_date or '' }}&end_date={{ end_date or '' }}"
+       class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 mb-6 inline-block">
+       Download PDF
+    </a>
+
+    <!-- Transaction Table -->
+   <table class="w-full border-collapse border border-gray-200">
+        <thead>
+            <tr class="bg-gray-100">
+                <th class="p-4 border border-gray-200 text-left">#</th>
+                <th class="p-4 border border-gray-200 text-left">Sender</th>
+                <th class="p-4 border border-gray-200 text-left">Receiver</th>
+                <th class="p-4 border border-gray-200 text-left">Pay Method</th>
+                <th class="p-4 border border-gray-200 text-left">Budget Used</th>
+                <th class="p-4 border border-gray-200 text-left">Type</th>
+                <th class="p-4 border border-gray-200 text-left">Amount</th>
+                <th class="p-4 border border-gray-200 text-left">Description</th>
+                <th class="p-4 border border-gray-200 text-left">Date</th>
+                <th class="p-4 border border-gray-200 text-left">Category</th>
+                <th class="p-4 border border-gray-200 text-left">Subcategory</th>
+                <th class="p-4 border border-gray-200 text-left">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for transaction in transactions %}
+        <tr>
+            <td class="p-4 border border-gray-200">{{ loop.index }}</td>
+            <td class="p-4 border border-gray-200">{{ transaction.user_name }}</td>
+            <td class="p-4 border border-gray-200">{{ transaction.account_name }}</td>
+            <td class="p-4 border border-gray-200">{{ transaction.receiver }}</td>
+            <td class="p-4 border border-gray-200">{{ transaction.trans_type }}</td>
+            <td class="p-4 border border-gray-200">{{ transaction.amount }}</td>
+            <td class="p-4 border border-gray-200">{{ transaction.description }}</td>
+            <td class="p-4 border border-gray-200">{{ transaction.date }}</td>
+            <td class="p-4 border border-gray-200">{{ transaction.sub_category }}</td>
+            <td class="p-4 border border-gray-200">{{ transaction.category }}</td>
+            <td class="p-4 border border-gray-200">{{ transaction.pay_method }}</td>
+            <td class="p-4 border border-gray-200">
+                        <a href="/delete_transaction/{{ transaction[0] }}" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">Delete</a>
+                    </td>
+        </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}

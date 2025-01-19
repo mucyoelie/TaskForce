@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="bg-white p-6 rounded-lg shadow-md">
+    <a href="{{ url_for('add_user') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Add user</a>
+<br><br>
+    <h3 class="text-lg font-semibold mb-4">Users</h3>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="space-y-4">
+                    {% for category, message in messages %}
+                        <div class="p-4 rounded-lg text-white
+                            {% if category == 'success' %}
+                                bg-green-500
+                            {% elif category == 'error' %}
+                                bg-red-500
+                            {% else %}
+                                bg-red-500
+                            {% endif %}
+                        ">
+                            <p>{{ message }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}<br>
+     <table class="w-full border-collapse border border-gray-200">
+        <thead>
+
+            <tr class="bg-gray-100">
+                <th class="p-4 border border-gray-200 text-left">#</th>
+                <th class="p-4 border border-gray-200 text-left">Full name</th>
+                <th class="p-4 border border-gray-200 text-left">Username</th>
+                <th class="p-4 border border-gray-200 text-left">Email</th>
+                <th class="p-4 border border-gray-200 text-left">Notify</th>
+                <th class="p-4 border border-gray-200 text-left">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+                <tr>
+                    <td class="p-4 border border-gray-200">{{ loop.index }}</td>
+                    <td class="p-4 border border-gray-200">{{ user[1] }}</td>
+                    <td class="p-4 border border-gray-200">{{ user[2] }}</td>
+                    <td class="p-4 border border-gray-200">{{ user[3] }}</td>
+                    <td class="p-4 border border-gray-200">{{ user[4] }}</td>
+                    <td class="p-4 border border-gray-200">
+                        <a href="/edit-user/{{ user[0] }}" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">Edit</a>
+                        <a href="/delete-user/{{ user[0] }}" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">Edit</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}

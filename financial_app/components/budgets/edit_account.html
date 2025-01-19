@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <!-- Form Section -->
+<div class="bg-white p-6 rounded-lg shadow-md">
+    <a href="{{ url_for('accounts') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Back to accounts</a>
+    <br><br>
+    <h3 class="text-lg font-semibold mb-4">Edit user</h3>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="space-y-4">
+                    {% for category, message in messages %}
+                        <div class="p-4 rounded-lg text-white
+                            {% if category == 'success' %}
+                                bg-green-500
+                            {% elif category == 'error' %}
+                                bg-red-500
+                            {% else %}
+                                bg-red-500
+                            {% endif %}
+                        ">
+                            <p>{{ message }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}<br>
+    {% if account %}
+    <form class="space-y-4" method="post">
+        <input type="text" value="{{ account[1] }}" placeholder="Enter account name" name="acc_name" class="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200" required>
+        <input type="number" value="{{ account[2] }}" placeholder="Enter balance" name="balance" class="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200" required>
+        <input type="date" value="{{account[3]}}" placeholder="Enter start date" name="start_date" class="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200" required>
+        <input type="date" value="{{account[4]}}" placeholder="Enter end date" name="end_date" class="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200" required>
+        <select required name="status" class="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200">
+            <option>Select an option</option>
+            <option value="1">Activate</option>
+            <option value="0">Deactivate</option>
+        </select>
+        <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">Edit account</button>
+    </form>
+    {% endif %}
+</div>
+{% endblock content %}

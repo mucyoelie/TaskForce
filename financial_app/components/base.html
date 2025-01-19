@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div id="sidebar" class="w-64 bg-blue-600 text-white fixed h-[60rem] md:relative transform transition-transform duration-300 md:translate-x-0 -translate-x-full">
+            <p class="text-lg text-white p-4 py-5">Wallet</p>
+            <ul class="p-4 space-y-4">
+                <li><a href="{{ url_for('index') }}" class="flex items-center space-x-2"><i class="fas fa-dashboard"></i> <span>Dashboard</span></a></li>
+                <li><a href="{{ url_for('view_users') }}" class="flex items-center space-x-2"><i class="fas fa-users"></i> <span>Users</span></a></li>
+                <li><a href="{{ url_for('accounts') }}" class="flex items-center space-x-2"><i class="fas fa-users"></i> <span>Budget</span></a></li>
+                <li><a href="{{ url_for('categories') }}" class="flex items-center space-x-2"><i class="fas fa-cogs"></i> <span>Categories</span></a></li>
+                <li><a href="{{ url_for('sub_categories') }}" class="flex items-center space-x-2"><i class="fas fa-cogs"></i> <span>Sub Categories</span></a></li>
+                <li><a href="{{ url_for('transactions') }}" class="flex items-center space-x-2"><i class="fas fa-cogs"></i> <span>Transaction</span></a></li>
+                <li><a href="{{ url_for('logout') }}" class="flex items-center space-x-2 pt-3"><i class="fas fa-cogs"></i> <span>Logout</span></a></li>
+            </ul>
+        </div>
+
+        <!-- Main content -->
+        <div class="flex-1 flex flex-col">
+            <!-- Header -->
+            <div class="flex items-center justify-between bg-blue-600 text-white p-4">
+                <button id="menu-toggle" class="md:hidden focus:outline-none">
+                    <i class="fas fa-bars">Menu</i>
+                </button>
+                <div class="relative">
+                    <button class="focus:outline-none">Admin <i class="fas fa-user"></i></button>
+                    <div class="hidden absolute right-0 bg-white text-black mt-2 shadow-lg py-2 rounded-lg">
+                        <a href="#" class="block px-4 py-2 hover:bg-gray-100">Profile</a>
+                        <a href="#" class="block px-4 py-2 hover:bg-gray-100">Logout</a>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Content -->
+            <div class="p-4 space-y-6">
+                <!-- content section -->
+
+                {% block content %}
+                {% endblock %}
+
+                <!-- end content section -->
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sidebar toggle
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('-translate-x-full');
+        });
+
+    </script>
+</body>
+</html>

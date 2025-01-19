@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Form Section -->
+<div class="bg-white p-6 rounded-lg shadow-md">
+    <a href="{{ url_for('add_transactions') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Back to transactions</a>
+    <br><br>
+    <h3 class="text-lg font-semibold mb-4">Add new transaction</h3>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="space-y-4">
+                    {% for category, message in messages %}
+                        <div class="p-4 rounded-lg text-white
+                            {% if category == 'success' %}
+                                bg-green-500
+                            {% elif category == 'error' %}
+                                bg-red-500
+                            {% else %}
+                                bg-red-500
+                            {% endif %}
+                        ">
+                            <p>{{ message }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+    <br>
+    <form class="space-y-4" method="POST">
+        <input type="text" placeholder="Enter user_id" name="user_id" class="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200" required>
+        <input type="text" placeholder="Enter receiver" name="receiver" class="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200" required>
+
+        <select required name="account_id" class="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200">
+            <option>Select account type</option>
+            {% for name in accounts %}
+            <option value="{{ name[0] }}">{{ name[1] }}</option>
+            {% endfor %}
+        </select>
+        <select required name="trans_type" class="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200">
+            <option>Select transaction type</option>
+            <option value="income">Income</option>
+            <option value="expense">Expense</option>
+        </select>
+        <input type="number" placeholder="Enter amount" name="amount" class="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200" required>
+        <input type="text" placeholder="Enter description" name="description" class="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200" required>
+        <input type="datetime-local" placeholder="Enter date" name="date" class="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200" required>
+
+        <!-- Category Dropdown -->
+        <select id="category" required name="cat_id" class="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200">
+            <option>Select category</option>
+            {% for cat in cat %}
+            <option value="{{ cat[0] }}">{{ cat[1] }}</option>
+            {% endfor %}
+        </select id="category">
+
+        <!-- Subcategory Dropdown -->
+        <select id="sub-category" required name="sub_cat_id" class="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200">
+            <option>Select subcategory</option>
+        </select>
+
+        <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">Add transaction</button>
+    </form>
+</div>
+
+<!-- JavaScript -->
+<script>
+    document.getElementById('category').addEventListener('change', function () {
+        const categoryId = this.value;
+        const subCategoryDropdown = document.getElementById('sub-category');
+
+        // Clear the subcategory dropdown
+        subCategoryDropdown.innerHTML = '<option>Select subcategory</option>';
+
+        // Fetch subcategories via AJAX
+        fetch(`/get_subcategories/${categoryId}`)
+            .then(response => response.json())
+            .then(data => {
+                data.subcategories.forEach(subcategory => {
+                    const option = document.createElement('option');
+                    option.value = subcategory.id;
+                    option.textContent = subcategory.name;
+                    subCategoryDropdown.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching subcategories:', error));
+    });
+</script>
+
+{% endblock %}

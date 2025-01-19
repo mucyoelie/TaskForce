@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="bg-white p-6 rounded-lg shadow-md">
+    <a href="{{ url_for('create_account') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Add budget</a>
+<br><br>
+    <h3 class="text-lg font-semibold mb-4">Budget</h3>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="space-y-4">
+                    {% for category, message in messages %}
+                        <div class="p-4 rounded-lg text-white
+                            {% if category == 'success' %}
+                                bg-green-500
+                            {% elif category == 'error' %}
+                                bg-red-500
+                            {% else %}
+                                bg-red-500
+                            {% endif %}
+                        ">
+                            <p>{{ message }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}<br>
+    <div class="overflow-y-auto h-full pb-20"> <!-- Add scrollable container -->
+    <table class="w-full border-collapse border border-gray-200">
+        <thead>
+            <tr class="bg-gray-100">
+                <th class="p-4 border border-gray-200 text-left">#</th>
+                <th class="p-4 border border-gray-200 text-left">Budget name</th>
+                <th class="p-4 border border-gray-200 text-left">Balance</th>
+                <th class="p-4 border border-gray-200 text-left">Start Date</th>
+                <th class="p-4 border border-gray-200 text-left">End Date</th>
+                <th class="p-4 border border-gray-200 text-left">Status</th>
+                <th class="p-4 border border-gray-200 text-left">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for acc in accounts %}
+                <tr>
+                    <td class="p-4 border border-gray-200">{{ loop.index }}</td>
+                    <td class="p-4 border border-gray-200">{{ acc[1] }}</td>
+                    <td class="p-4 border border-gray-200">{{ acc[2] }}</td>
+                    <td class="p-4 border border-gray-200">{{ acc[3] }}</td>
+                    <td class="p-4 border border-gray-200">{{ acc[4] }}</td>
+                    <td class="p-4 border border-gray-200">
+                        {% if acc[5] == 1 %}
+                        <p class="bg-green-500 text-white rounded-full text-center">Active</p>
+                        {% else %}
+                        <p class="bg-red-500 text-white rounded-full text-center">Deactive</p>
+                        {% endif %}
+                    </td>
+                    <td class="p-4 border border-gray-200">
+                        <div class="relative inline-block text-left">
+                            <button id="dropdown-button-{{ acc[0] }}" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none" type="button">
+                                Actions <i class="fa-solid fa-chevron-down ml-2"></i>
+                            </button>
+                            <div id="dropdown-menu-{{ acc[0] }}" class="hidden origin-top-right absolute left-0 mt-2 w-36 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                                <div class="py-1">
+                                    <a href="/edit_budget/{{ acc[0] }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        <i class="fa-solid fa-pen mr-2 text-green-600"></i> Edit
+                                    </a>
+                                    <a href="/delete_budget/{{ acc[0] }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        <i class="fa-solid fa-trash mr-2 text-red-600"></i> Delete
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // JavaScript to handle dropdown show/hide for actions
+    document.querySelectorAll('button[id^="dropdown-button-"]').forEach(button => {
+        button.addEventListener('click', function(event) {
+            const userId = event.target.id.split('-')[2];
+            const dropdownMenu = document.getElementById(`dropdown-menu-${userId}`);
+            dropdownMenu.classList.toggle('hidden');
+        });
+    });
+
+    // Close all dropdowns if clicked outside
+    window.addEventListener('click', function(event) {
+        if (!event.target.closest('.relative')) {
+            document.querySelectorAll('.hidden').forEach(menu => {
+                menu.classList.add('hidden');
+            });
+        }
+    });
+</script>
+
+</div>
+{% endblock content %}

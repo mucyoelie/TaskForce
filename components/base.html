@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallet Application</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 font-raleway">
+    <!-- Navigation Bar -->
+    <nav class="bg-[#003366] text-white">
+        <div class=" mx-auto flex flex-wrap items-center justify-between p-4">
+            <!-- Logo -->
+            <div class="text-lg font-bold">
+                <img src="static/img/wallet.jpg"  alt="wallet-image" width="40px"
+                height="40px" class="rounded-full"/>
+            </div>
+
+            <!-- Hamburger Menu for Mobile -->
+            <button class="block lg:hidden text-white focus:outline-none -mr-40" id="menu-toggle">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <!-- Navigation Links -->
+            <ul class="hidden w-full lg:flex lg:space-x-6 lg:w-auto" id="menu">
+                <li><a href="{{ url_for('index') }}" class="flex items-center space-x-2 hover:text-gray-200"><i class="fa-solid fa-house"></i> <span>Dashboard</span></a></li>
+                <li><a href="{{ url_for('view_users') }}" class="flex items-center space-x-2 hover:text-gray-200"><i class="fa-solid fa-users"></i> <span>Users</span></a></li>
+                <li><a href="{{ url_for('accounts') }}" class="flex items-center space-x-2 hover:text-gray-200"><i class="fa-solid fa-wallet"></i> <span>Budget</span></a></li>
+                <li><a href="{{ url_for('categories') }}" class="flex items-center space-x-2 hover:text-gray-200"><i class="fa-solid fa-tags"></i> <span>Categories</span></a></li>
+                <li><a href="{{ url_for('sub_categories') }}" class="flex items-center space-x-2 hover:text-gray-200"><i class="fa-solid fa-sitemap"></i> <span>Sub Categories</span></a></li>
+                <li><a href="{{ url_for('transactions') }}" class="flex items-center space-x-2 hover:text-gray-200"><i class="fa-solid fa-money-check"></i> <span>Transaction</span></a></li>
+                
+            </ul>
+
+            <!-- User Profile Dropdown -->
+            <div class="relative mt-4 lg:mt-0">
+                <button class="flex items-center space-x-2 focus:outline-none">
+                    <span>User</span>
+                    <i class="fa-solid fa-user"></i>
+                </button>
+                <!-- Dropdown menu -->
+                <div class="hidden absolute right-0 bg-white text-black mt-2 shadow-lg py-2 rounded-lg">
+                    <a href="{{ url_for('index') }}" class="block px-4 py-2 hover:bg-gray-100">Profile</a>
+                    <a href="{{ url_for('logout') }}" class="block px-4 py-2 hover:bg-gray-100">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto p-4">
+        <!-- content section -->
+        {% block content %}
+        {% endblock %}
+        <!-- end content section -->
+    </div>
+
+    <script>
+        // Toggle Hamburger Menu
+        const menuToggle = document.getElementById('menu-toggle');
+        const menu = document.getElementById('menu');
+
+        menuToggle.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+
+        // User Profile Dropdown
+        const userProfile = document.querySelector('.relative button');
+        const dropdownMenu = document.querySelector('.relative div.hidden');
+
+        userProfile.addEventListener('click', () => {
+            dropdownMenu.classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>

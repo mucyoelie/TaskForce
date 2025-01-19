@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="bg-gray-100 p-4">
+
+    <!-- Dashboard Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div class="bg-blue-500 text-white p-6 rounded-lg shadow-lg">
+            <h3 class="text-lg font-bold">Total Income</h3>
+            <p class="text-xl mt-2">${{ "{:,.2f}".format(total_income) }}</p>
+        </div>
+
+        <div class="bg-red-500 text-white p-6 rounded-lg shadow-lg">
+            <h3 class="text-lg font-bold">Total Expense</h3>
+            <p class="text-xl mt-2">${{ "{:,.2f}".format(total_expense) }}</p>
+        </div>
+
+        <div class="bg-green-500 text-white p-6 rounded-lg shadow-lg">
+            <h3 class="text-lg font-bold">Total Budget</h3>
+            <p class="text-xl mt-2">${{ "{:,.2f}".format(total_budget) }}</p>
+        </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
+        <h3 class="text-xl font-bold mb-4">Income vs Expense vs Total Budget</h3>
+        <canvas id="transactionsChart"></canvas>
+    </div>
+
+    <!-- Chart.js Script -->
+    <script>
+        var ctx = document.getElementById('transactionsChart').getContext('2d');
+        var transactionsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Income', 'Expense', 'Total Budget'],
+                datasets: [{
+                    label: 'Amount ($)',
+                    data: [{{ total_income }}, {{ total_expense }}, {{ total_budget }}],
+                    backgroundColor: ['#0066ff', '#ff3333', '#4CAF50'],  // Matching colors to boxes
+                    borderColor: ['#0066ff', '#ff3333', '#4CAF50'],      // Matching colors to boxes
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value.toFixed(2);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</section>
+{% endblock content %}

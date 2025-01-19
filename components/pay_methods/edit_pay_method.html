@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <!-- Form Section -->
+<div class="bg-white p-6 rounded-lg shadow-md">
+    <a href="{{ url_for('payment_methods') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Back to payment methods</a>
+    <br><br>
+    <h3 class="text-lg font-semibold mb-4">Edit sub category</h3>
+
+    {% if pay_method %}
+    <form class="space-y-4" method="post">
+
+        <input type="text" value="{{ pay_method[1] }}" placeholder="Enter payment method" name="method" class="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200" required>
+        <input type="text" value="{{ pay_method[2] }}" placeholder="Enter payment method" name="description" class="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200" required>
+        <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">Edit payment methods</button>
+    </form>
+    {% endif %}
+</div>
+{% endblock content %}

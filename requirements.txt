@@ -1,0 +1,6 @@
+
+flask
+flask-mysqldb
+flask-bcrypt
+flask-mail
+reportlab

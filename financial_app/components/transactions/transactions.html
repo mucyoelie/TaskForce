@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="bg-white p-6 rounded-lg shadow-md">
+    <div class="flex justify-between">
+        <a href="{{ url_for('add_transactions') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Add transaction</a>
+        <a href="{{ url_for('report') }}" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">Generate Report</a>
+    </div>
+<br>
+    <h3 class="text-lg font-semibold mb-4">Transaction</h3>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="space-y-4">
+                    {% for category, message in messages %}
+                        <div class="p-4 rounded-lg text-white
+                            {% if category == 'success' %}
+                                bg-green-500
+                            {% elif category == 'error' %}
+                                bg-red-500
+                            {% else %}
+                                bg-red-500
+                            {% endif %}
+                        ">
+                            <p>{{ message }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+    <br>
+     <table class="w-full border-collapse border border-gray-200">
+        <thead>
+
+            <tr class="bg-gray-100">
+                <th class="p-4 border border-gray-200 text-left">#</th>
+                <th class="p-4 border border-gray-200 text-left">Sender</th>
+                <th class="p-4 border border-gray-200 text-left">Receiver</th>
+                <th class="p-4 border border-gray-200 text-left">Account type</th>
+                <th class="p-4 border border-gray-200 text-left">Type</th>
+                <th class="p-4 border border-gray-200 text-left">Amount</th>
+                <th class="p-4 border border-gray-200 text-left">Description</th>
+                <th class="p-4 border border-gray-200 text-left">Date</th>
+                <th class="p-4 border border-gray-200 text-left">Category</th>
+                <th class="p-4 border border-gray-200 text-left">Sub category</th>
+                <th class="p-4 border border-gray-200 text-left">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaction in transactions %}
+                <tr>
+                    <td class="p-4 border border-gray-200">{{ loop.index }}</td>
+                    <td class="p-4 border border-gray-200">{{ transaction[1] }}</td>
+                    <td class="p-4 border border-gray-200">{{ transaction[3] }}</td>
+                    <td class="p-4 border border-gray-200">{{ transaction[2] }}</td>
+                    <td class="p-4 border border-gray-200">{{ transaction[4] }}</td>
+                    <td class="p-4 border border-gray-200">{{ transaction[5] }}</td>
+                    <td class="p-4 border border-gray-200">{{ transaction[6] }}</td>
+                    <td class="p-4 border border-gray-200">{{ transaction[7] }}</td>
+                    <td class="p-4 border border-gray-200">{{ transaction[9] }}</td>
+                    <td class="p-4 border border-gray-200">{{ transaction[8] }}</td>
+                    <td class="p-4 border border-gray-200">
+                        <a href="/delete_transaction/{{ transaction[0] }}" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">Delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}
