@@ -1,0 +1,103 @@
+Wallet Web Application
+This project is a wallet web application developed as a solution for managing personal finances. The application allows users to track transactions,
+generate reports, set budgets, and visualize financial summaries.
+
+Features
+Transaction Tracking
+
+Record all income and expenses from multiple accounts
+Report Generation
+
+Generate detailed reports for a specific time period to track financial trends.
+Budget Management
+
+Set budgets and receive notifications when spending exceeds the set limits.
+Categorization
+
+Add categories and subcategories for expenses and link them to transactions.
+Visualization
+
+View summaries of transactions with graphs and charts for better understanding.
+Technologies Used
+Backend: Flask
+Frontend: HTML, Tailwind CSS
+Database: MySQL
+
+Here's a draft for your README.md file based on the Task Force Pro 2.0 Code Challenge details:
+
+Wallet Web Application
+This project is a wallet web application developed as a solution for managing personal finances. The application allows users to track transactions, generate reports, set budgets, and visualize financial summaries.
+
+Features
+Transaction Tracking
+
+Record all income and expenses from multiple accounts (e.g., bank accounts, mobile money, cash).
+Report Generation
+
+Generate detailed reports for a specific time period to track financial trends.
+Budget Management
+
+Set budgets and receive notifications when spending exceeds the set limits.
+Categorization
+
+Add categories and subcategories for expenses and link them to transactions.
+Visualization
+
+View summaries of transactions with graphs and charts for better understanding.
+Technologies Used
+Backend: Flask
+Frontend: HTML, Tailwind CSS
+Database: MySQL
+Prerequisites
+Ensure you have the following installed on your machine:
+
+Python (3.8 or later)
+Flask
+MySQL
+Node.js (for Tailwind CSS setup, if applicable)
+Installation and Setup
+Clone the repository:
+
+bash
+Copy
+Edit
+git clone <repository-link>
+cd wallet-web-app
+Install the required Python packages:
+
+bash
+Copy
+Edit
+pip install -r requirements.txt
+Set up the database:
+
+Create a MySQL database named wallet_app.
+Run the provided SQL script to set up tables and initial data:
+bash
+Copy
+Edit
+mysql -u <username> -p wallet_app < schema.sql
+Configure the .env file with your MySQL credentials:
+
+makefile
+Copy
+Edit
+DB_HOST=localhost
+DB_USER=<your-username>
+DB_PASSWORD=<your-password>
+DB_NAME=wallet_app
+Start the application:
+
+bash
+Copy
+Edit
+flask run
+Open the application in your browser:
+http://127.0.0.1:5000
+
+Deployment
+The application is hosted on pythonanywhere. You can access it here.
+
+Access Credentials
+Username: WalletApp
+Password: (5 spaces)
