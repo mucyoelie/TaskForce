@@ -44,3 +44,38 @@ The application is hosted on pythonanywhere. You can access it here.
 Access Credentials
 Username: Admin
 Password: (123)
+
+
+
+
+
+Windows
+
+1. Clone the repository:
+
+	git clone https://github.com/mucyoelie/TaskForce.git  
+	cd TaskForce
+
+2. Create and activate a virtual environment:
+
+	python -m venv venv  
+	venv\Scripts\activate
+
+3. Install the required dependencies:
+
+	pip install -r requirements.txt
+
+4. Open MySQL and create a database:
+
+	CREATE DATABASE finance_tracker;
+
+5. Import database in :
+
+	/db/finance_tracker.sql
+
+6. Run the project :
+
+	flask run  
+
+
+Open your browser and navigate to http://127.0.0.1:5000.
