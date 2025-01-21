@@ -13,7 +13,7 @@
 </head>
 <body class="bg-gray-100 font-raleway">
     <!-- Navigation Bar -->
-    <nav class="bg-[#003366] text-white">
+    <nav class="bg-[#003366] text-white fixed w-full">
         <div class=" mx-auto flex flex-wrap items-center justify-between p-4">
             <!-- Logo -->
             <div class="text-lg font-bold">
@@ -22,7 +22,7 @@
             </div>
 
             <!-- Hamburger Menu for Mobile -->
-            <button class="block lg:hidden text-white focus:outline-none -mr-40" id="menu-toggle">
+            <button class="block lg:hidden text-white focus:outline-none ml-[10rem]" id="menu-toggle">
                 <i class="fa-solid fa-bars"></i>
             </button>
 
@@ -34,7 +34,9 @@
                 <li><a href="{{ url_for('categories') }}" class="flex items-center space-x-2 hover:text-gray-200"><i class="fa-solid fa-tags"></i> <span>Categories</span></a></li>
                 <li><a href="{{ url_for('sub_categories') }}" class="flex items-center space-x-2 hover:text-gray-200"><i class="fa-solid fa-sitemap"></i> <span>Sub Categories</span></a></li>
                 <li><a href="{{ url_for('transactions') }}" class="flex items-center space-x-2 hover:text-gray-200"><i class="fa-solid fa-money-check"></i> <span>Transaction</span></a></li>
-                
+
+                <li><a href="{{ url_for('payment_methods') }}" class="flex items-center space-x-2"><i class="fa-solid fa-credit-card"></i> <span>Payment Methods</span></a></li>
+
             </ul>
 
             <!-- User Profile Dropdown -->
