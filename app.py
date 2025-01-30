@@ -4,7 +4,6 @@ from functools import wraps
 
 from flask import Flask, render_template, request, redirect, flash, url_for, send_file, session, jsonify
 from flask_mysqldb import MySQL
-from flask_bcrypt import Bcrypt
 from io import BytesIO
 from flask_mail import Mail, Message
 
@@ -23,8 +22,6 @@ app.config['MYSQL_PASSWORD'] = ''
 app.config['MYSQL_DB'] = 'finance_tracker'
 
 mysql = MySQL(app)
-
-bcrypt = Bcrypt(app)
 
 
 def login_required(f):
@@ -47,10 +44,10 @@ def login():
         cursor.execute("SELECT * FROM users WHERE username = %s", [username])
         user = cursor.fetchone()
         cursor.close()
-
+        
         if user:
             # Check if password matches
-            if bcrypt.check_password_hash(user[4], password):  # Assuming the password is stored in the 5th column
+            if user[4] == password:  # Assuming the password is stored in the 5th column
                 # Store user info in session
                 session['user_id'] = user[0]  # Assuming the first column is user ID
                 session['username'] = user[1]  # Assuming the second column is the username
@@ -149,7 +146,7 @@ def add_user():
         username = request.form['username']
         email = request.form['email']
 
-        password = bcrypt.generate_password_hash(request.form['password']).decode('utf-8')
+        password = request.form['password']
         cursor = mysql.connection.cursor()
         cursor.execute("INSERT INTO users (full_name, username, email, password) VALUES (%s, %s, %s, %s)",
                        (fullname, username, email, password))
@@ -175,7 +172,7 @@ def edit_user(id):
         username = request.form['username']
         email = request.form['email']
 
-        password = bcrypt.generate_password_hash(request.form['password']).decode('utf-8')
+        password = request.form['password']
 
         cursor = mysql.connection.cursor()
         cursor.execute("UPDATE users SET full_name = %s, username = %s, email = %s, password = %s WHERE id = %s",
@@ -533,7 +530,6 @@ def delete_transaction(transaction_id):
     flash('Transaction deleted and account balance updated!', 'success')
     return redirect('/transactions')
 
-
 @app.route('/get_subcategories/<int:category_id>', methods=['GET'])
 @login_required
 def get_subcategories(category_id):
@@ -635,7 +631,7 @@ def edit_account(id):
 @login_required
 def delete_account(id):
     cursor = mysql.connection.cursor()
-    cursor.execute("UPDATE dlt = %s FROM accounts WHERE id = %s", (1, id))
+    cursor.execute("DELETE FROM accounts WHERE id = %s", (id,))
     mysql.connection.commit()
     cursor.close()
     flash('Account Deleted Successfully!', 'danger')
@@ -835,6 +831,64 @@ def download_pdf():
         mimetype="application/pdf",
     )
 
+# --------------------------------- payment method crud -----------------------------------------------
+
+
+@app.route('/payment-method')
+def payment_methods():
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT * FROM pay_method WHERE status != %s", ('0',))
+    pay_methods = cursor.fetchall()
+    cursor.close()
+    return render_template('pay_methods/payment_methods.html', pay_methods=pay_methods)
+
+
+@app.route('/payment-method/add', methods=['GET', 'POST'])
+def add_payment_method():
+    if request.method == 'POST':
+        method = request.form['method']
+        description = request.form['description']
+        status = 1
+
+        cursor = mysql.connection.cursor()
+        cursor.execute("INSERT INTO pay_method (method, description, status) VALUES (%s, %s, %s)",
+                       (method, description, status))
+        mysql.connection.commit()
+        cursor.close()
+        flash('Payment method add successful', 'success')
+        return redirect(url_for('payment_methods'))
+    return render_template('pay_methods/add_pay_method.html')
+
+
+@app.route('/payment-method/edit/<int:id>', methods=['GET', 'POST'])
+def edit_payment_method(id):
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT * FROM pay_method WHERE id = %s", (id,))
+    pay_method = cursor.fetchone()
+
+    if request.method == 'POST':
+        method = request.form['method']
+        description = request.form['description']
+        status = 1
+
+        cursor.execute("UPDATE pay_method SET method = %s, description = %s, status = %s WHERE id = %s",
+                       (method, description, status, id))
+        mysql.connection.commit()
+        cursor.close()
+        flash('Payment method updated successful', 'success')
+        return redirect(url_for('payment_methods'))
+
+    return render_template('pay_methods/edit_pay_method.html', pay_method=pay_method)
+
+
+@app.route('/pay_method/delete/<int:id>', methods=['GET'])
+def delete_payment_method(id):
+    cursor = mysql.connection.cursor()
+    cursor.execute("DELETE FROM pay_method WHERE id = %s", (id,))
+    mysql.connection.commit()
+    cursor.close()
+    flash('Payment method deleted successful', 'success')
+    return redirect(url_for('payment_methods'))
 
 if __name__ == "__main__":
     app.run(debug=True)

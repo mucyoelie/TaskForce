@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="bg-white p-6 rounded-lg shadow-md">
+<div class="bg-white p-6 rounded-lg shadow-md mt-40">
     <a href="{{ url_for('add_user') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Add user</a>
     <br><br>
     <h3 class="text-lg font-semibold mb-4">Users</h3>
@@ -44,10 +44,10 @@
                         <td class="p-4 border border-gray-200">{{ user[2] }}</td>
                         <td class="p-4 border border-gray-200">{{ user[3] }}</td>
                         <td class="p-4 border border-gray-200">
-                            {% if user[5]==0 %}
-                            <p class="bg-red-500 text-center text-white rounded-full">User can't notify</p>
-                            {% elif user[5]==1 %}
-                            <p class="bg-green-500 text-center text-white rounded-full">User can notify</p>
+                            {% if user[5] == 0 %}
+                            <p class="bg-[#B0B0B0] items-center flex px-[1.2rem]  text-center text-white rounded-lg h-10 w-[10rem]">User can't notify</p>
+                            {% elif user[5] ==1 %}
+                            <p class="bg-[#003366] flex items-center px-[1.2rem] text-center text-white rounded-lg h-10 w-[10rem]">User can notify</p>
                             {% endif %}
                         </td>
                         <td class="p-4 border border-gray-200">

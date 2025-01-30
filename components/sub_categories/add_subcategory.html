@@ -2,18 +2,22 @@
 {% block content %}
 
     <!-- Form Section -->
-<div class="bg-white p-6 rounded-lg shadow-md">
-    <a href="{{ url_for('categories') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Back to categories</a>
+<div class="bg-white p-6 rounded-lg shadow-md mt-40">
+    <a href="{{ url_for('sub_categories') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Back to sub categories</a>
     <br><br>
-    <h3 class="text-lg font-semibold mb-4">Edit category</h3>
+    <h3 class="text-lg font-semibold mb-4">Add new sub category</h3>
 
-    {% if category %}
     <form class="space-y-4" method="post">
-        <input type="text" value="{{ category[1] }}" placeholder="Enter category name" name="name" class="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200" required>
-        <input type="text" value="{{ category[2] }}" placeholder="Enter category description" name="description" class="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200" required>
+        <select required name="cat_id" class="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200">
+            <option>Select Category</option>
+            {% for name in cat_name %}
+            <option value="{{ name[0] }}">{{ name[1] }}</option>
+            {% endfor %}
+        </select>
+        <input type="text" placeholder="Enter sub category name" name="name" class="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200" required>
+        <input type="text" placeholder="Enter sub category description" name="description" class="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200" required>
 
-        <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">Edit category</button>
+        <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">Add sub category</button>
     </form>
-    {% endif %}
 </div>
 {% endblock content %}

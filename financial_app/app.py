@@ -635,7 +635,7 @@ def edit_account(id):
 @login_required
 def delete_account(id):
     cursor = mysql.connection.cursor()
-    cursor.execute("UPDATE dlt = %s FROM accounts WHERE id = %s", (1, id))
+    cursor.execute("DELETE FROM accounts WHERE id = %s", (id,))
     mysql.connection.commit()
     cursor.close()
     flash('Account Deleted Successfully!', 'danger')
