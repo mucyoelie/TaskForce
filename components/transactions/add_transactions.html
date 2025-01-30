@@ -13,13 +13,13 @@
         <input type="text" placeholder="Enter receiver" name="receiver" class="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200" required>
 
         <select required name="account_id" class="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200">
-            <option>Select budget</option>
+            <option value="">Select budget</option>
             {% for acc in accounts %}
             <option value="{{ acc[0] }}">{{ acc[1] }}</option>
             {% endfor %}
         </select>
         <select required name="pay_method" class="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200">
-            <option>Select payment method</option>
+            <option value="">Select payment method</option>
             {% for pay_m in pay_method %}
             <option value="{{ pay_m[1] }}">{{ pay_m[1] }}</option>
             {% endfor %}
@@ -35,7 +35,7 @@
 
         <!-- Category Dropdown -->
         <select id="category" required name="cat_id" class="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200">
-            <option>Select category</option>
+            <option value="">Select category</option>
             {% for cat in cat %}
             <option value="{{ cat[0] }}">{{ cat[1] }}</option>
             {% endfor %}
@@ -43,7 +43,7 @@
 
         <!-- Subcategory Dropdown -->
         <select id="sub-category" required name="sub_cat_id" class="w-full p-3 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200">
-            <option>Select subcategory</option>
+            <option value="">Select subcategory</option>
         </select>
 
         <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">Add transaction</button>
@@ -60,7 +60,7 @@
         subCategoryDropdown.innerHTML = '<option>Select subcategory</option>';
 
         // Fetch subcategories via AJAX
-        fetch(/get_subcategories/${categoryId})
+        fetch(`/get_subcategories/${categoryId}`)
             .then(response => response.json())
             .then(data => {
                 data.subcategories.forEach(subcategory => {

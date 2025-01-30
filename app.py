@@ -349,6 +349,7 @@ def delete_subcategory(id):
 # ------------------------- end categories and sub_categories --------------------------
 
 
+
 # ---------------------------------- transaction ---------------------------------------
 
 
@@ -362,14 +363,15 @@ def transactions():
         SELECT 
             t.id AS transaction_id,
             u.full_name AS user_name,
-            a.account_name AS account_name,
+            a.account_name AS budget,
             t.receiver AS transaction_receiver,
             t.type AS transaction_type,
             t.amount AS transaction_amount,
             t.description AS transaction_description,
             t.date AS transaction_date,
             sc.name AS sub_category_name,
-            c.name AS category_name
+            c.name AS category_name,
+            t.pay_method AS transaction_pay_method
         FROM 
             transactions t
         JOIN 
@@ -382,48 +384,38 @@ def transactions():
             categories c ON sc.cat_id = c.id
     """)
     transactions = cur.fetchall()
-    cur.close()
+
 
     # Format the amounts as currency
     formatted_transactions = []
     for transaction in transactions:
-        transaction_id, user_name, account_name, receiver, trans_type, amount, description, date, sub_category, category = transaction
-        formatted_amount = "{:,.2f}".format(amount)  # Format amount as currency
-        formatted_transactions.append((
-            transaction_id, user_name, account_name, receiver, trans_type, formatted_amount,
-            description, date, sub_category, category
-        ))
+        # Unpack all fields from the query
+        (
+            transaction_id, user_name, account_name, receiver, trans_type,
+            amount, description, date, sub_category, category, pay_method
+        ) = transaction
 
+        # Format the amount as currency
+        formatted_amount = "{:,.2f}".format(amount)  # e.g., "1,234.56"
+
+        # Append the formatted transaction
+        formatted_transactions.append({
+            'transaction_id': transaction_id,
+            'user_name': user_name,
+            'account_name': account_name,
+            'receiver': receiver,
+            'trans_type': trans_type,
+            'amount': formatted_amount,
+            'description': description,
+            'date': date,
+            'sub_category': sub_category,
+            'category': category,
+            'pay_method': pay_method,
+        })
+    cur.close()
     return render_template('transactions/transactions.html', transactions=formatted_transactions)
 
 
-
-def send_email_notification(to_email, subject, message):
-    import smtplib
-    from email.mime.text import MIMEText
-
-    try:
-        # Email server configuration
-        smtp_server = "smtp.gmail.com"
-        smtp_port = 587
-        sender_email = "info.kwolalabs@gmail.com"
-        sender_password = f"{random.Random(9999999)}"  # Use the generated App Password
-
-        # Create the email message
-        msg = MIMEText(message)
-        msg['Subject'] = subject
-        msg['From'] = sender_email
-        msg['To'] = to_email
-
-        # Send the email
-        with smtplib.SMTP(smtp_server, smtp_port) as server:
-            server.starttls()  # Start TLS encryption
-            server.login(sender_email, sender_password)  # Login to the email server
-            server.send_message(msg)  # Send the email
-
-        print(f"Notification email sent to {to_email}")
-    except Exception as e:
-        print(f"Error sending email: {e}")
 
 @app.route('/transactions/add', methods=['GET', 'POST'])
 @login_required
@@ -437,6 +429,7 @@ def add_transactions():
         description = request.form['description']
         date = request.form['date']
         sub_cat_id = request.form['sub_cat_id']
+        pay_method = request.form['pay_method']
 
         cur = mysql.connection.cursor()
         cur.execute("SELECT balance, status FROM accounts WHERE id = %s", (account_id,))
@@ -461,15 +454,23 @@ def add_transactions():
                 # Send email notifications
                 for email in emails:
                     to_email = email[0]
-                    subject = "Low Account Balance Alert"
-                    message = (
-                        f"Dear User,\n\n"
-                        f"A transaction could not be processed due to insufficient balance in account ID: {account_id}.\n"
-                        f"Transaction Amount: {amount:,.2f}\n"
-                        f"Current Balance: {account_balance:,.2f}\n\n"
-                        f"Please take the necessary action."
+
+                    msg = Message(
+                        subject="Low Account Balance Alert",
+                        recipients=[to_email],  # Replace with the recipient's email
+                        body=f"""
+                        Dear User,\n\n"
+                        A transaction could not be processed due to insufficient balance in account ID: {account_id}.\n"
+                        Transaction Amount: {amount:,.2f}\n"
+                        Current Balance: {account_balance:,.2f}\n\n"
+                        Please take the necessary action.
+                        """
                     )
-                    send_email_notification(to_email, subject, message)
+                    try:
+                        mail.send(msg)
+                        print("Email sent successfully!")
+                    except Exception as e:
+                        print(f"Failed to send email: {e}")
 
                 flash('Insufficient balance in the selected account! Notifications sent.', 'danger')
                 return redirect('/transactions')
@@ -483,9 +484,9 @@ def add_transactions():
             return redirect('/transactions')
 
         cur.execute("""
-            INSERT INTO transactions (user_id, receiver, account_id, type, amount, description, date, sub_cat_id) 
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-        """, (user_id, receiver, account_id, trans_type, amount, description, date, sub_cat_id))
+            INSERT INTO transactions (user_id, receiver, pay_method, account_id, type, amount, description, date, sub_cat_id) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (user_id, receiver, pay_method, account_id, trans_type, amount, description, date, sub_cat_id))
 
         cur.execute("UPDATE accounts SET balance = %s WHERE id = %s", (new_balance, account_id))
         mysql.connection.commit()
@@ -495,13 +496,18 @@ def add_transactions():
         return redirect('/transactions')
 
     cur = mysql.connection.cursor()
-    cur.execute("SELECT id, account_name FROM accounts WHERE status = %s", (1,))
+    cur.execute("SELECT id, account_name FROM accounts WHERE status = %s ", (1,))
     accounts = cur.fetchall()
-    cur.execute("SELECT id, name FROM categories")
+
+    cur.execute("SELECT id, name FROM categories WHERE status != %s", (3,))
     cat = cur.fetchall()
+
+    cur.execute("SELECT id, method FROM pay_method WHERE status = %s ", (1,))
+    pay_method_ = cur.fetchall()
     cur.close()
 
-    return render_template('transactions/add_transactions.html', accounts=accounts, cat=cat)
+    return render_template('transactions/add_transactions.html',
+                           accounts=accounts, cat=cat, pay_method=pay_method_)
 
 
 @app.route('/delete_transaction/<int:transaction_id>', methods=['GET'])
@@ -529,6 +535,7 @@ def delete_transaction(transaction_id):
 
     flash('Transaction deleted and account balance updated!', 'success')
     return redirect('/transactions')
+
 
 @app.route('/get_subcategories/<int:category_id>', methods=['GET'])
 @login_required
