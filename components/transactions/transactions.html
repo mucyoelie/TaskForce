@@ -49,17 +49,17 @@
         <tbody>
         {% for transaction in transactions %}
         <tr>
-            <td class="p-4 border border-gray-200">{{ transaction.transaction_id }}</td>
-            <td class="p-4 border border-gray-200">{{ transaction.user_name }}</td>
-            <td class="p-4 border border-gray-200">{{ transaction.account_name }}</td>
+            <td class="p-4 border border-gray-200">{{ loop.index }}</td>
+            <td class="p-4 border border-gray-200">{{ transaction.user_name}}</td>
             <td class="p-4 border border-gray-200">{{ transaction.receiver }}</td>
-            <td class="p-4 border border-gray-200">{{ transaction.trans_type }}</td>
-            <td class="p-4 border border-gray-200">{{ transaction.amount }}</td>
-            <td class="p-4 border border-gray-200">{{ transaction.description }}</td>
-            <td class="p-4 border border-gray-200">{{ transaction.date }}</td>
-            <td class="p-4 border border-gray-200">{{ transaction.sub_category }}</td>
+            <td class="p-4 border border-gray-200">{{transaction.pay_method  }}</td>
+            <td class="p-4 border border-gray-200">{{ transaction.account_name }}</td>
+            <td class="p-4 border border-gray-200">{{transaction.trans_type  }}</td>
+            <td class="p-4 border border-gray-200">{{ transaction.amount  }}</td>
+            <td class="p-4 border border-gray-200">{{ transaction.description}}</td>
+            <td class="p-4 border border-gray-200">{{transaction.date }}</td>
             <td class="p-4 border border-gray-200">{{ transaction.category }}</td>
-            <td class="p-4 border border-gray-200">{{ transaction.pay_method }}</td>
+            <td class="p-4 border border-gray-200">{{ transaction.sub_category }}</td>
             <td class="p-4 border border-gray-200">
                         <a href="/delete_transaction/{{ transaction[0] }}" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">Delete</a>
                     </td>

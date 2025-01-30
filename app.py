@@ -655,74 +655,78 @@ def report():
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
 
+    # Base query with placeholders for optional date filtering
+    query = """
+        SELECT 
+            t.id AS transaction_id,
+            u.full_name AS user_name,
+            a.account_name AS account_name,
+            t.receiver AS transaction_receiver,
+            t.type AS transaction_type,
+            t.amount AS transaction_amount,
+            t.description AS transaction_description,
+            t.date AS transaction_date,
+            sc.name AS sub_category_name,
+            c.name AS category_name,
+            t.pay_method AS transaction_pay_method
+        FROM 
+            transactions t
+        JOIN 
+            users u ON t.user_id = u.id
+        JOIN 
+            accounts a ON t.account_id = a.id
+        JOIN 
+            sub_categories sc ON t.sub_cat_id = sc.id
+        JOIN 
+            categories c ON sc.cat_id = c.id
+    """
+
+    # Add date filtering condition if dates are provided
     if start_date and end_date:
-        query = """
-            SELECT 
-                t.id AS transaction_id,
-                u.full_name AS user_name,
-                a.account_name AS account_name,
-                t.receiver AS transaction_receiver,
-                t.type AS transaction_type,
-                t.amount AS transaction_amount,
-                t.description AS transaction_description,
-                t.date AS transaction_date,
-                sc.name AS sub_category_name,
-                c.name AS category_name
-            FROM 
-                transactions t
-            JOIN 
-                users u ON t.user_id = u.id
-            JOIN 
-                accounts a ON t.account_id = a.id
-            JOIN 
-                sub_categories sc ON t.sub_cat_id = sc.id
-            JOIN 
-                categories c ON sc.cat_id = c.id
-            WHERE 
-                t.date BETWEEN %s AND %s
-        """
+        query += " WHERE t.date BETWEEN %s AND %s"
         cur.execute(query, (start_date, end_date))
     else:
-        query = """
-            SELECT 
-                t.id AS transaction_id,
-                u.full_name AS user_name,
-                a.account_name AS account_name,
-                t.receiver AS transaction_receiver,
-                t.type AS transaction_type,
-                t.amount AS transaction_amount,
-                t.description AS transaction_description,
-                t.date AS transaction_date,
-                sc.name AS sub_category_name,
-                c.name AS category_name
-            FROM 
-                transactions t
-            JOIN 
-                users u ON t.user_id = u.id
-            JOIN 
-                accounts a ON t.account_id = a.id
-            JOIN 
-                sub_categories sc ON t.sub_cat_id = sc.id
-            JOIN 
-                categories c ON sc.cat_id = c.id
-        """
         cur.execute(query)
 
+    # Fetch results
     transactions = cur.fetchall()
     cur.close()
 
-    # Format the amounts as currency
+    # Format the transactions as a list of dictionaries
     formatted_transactions = []
     for transaction in transactions:
-        transaction_id, user_name, account_name, receiver, trans_type, amount, description, date, sub_category, category = transaction
-        formatted_amount = "{:,.2f}".format(amount)  # Format amount as currency
-        formatted_transactions.append((
-            transaction_id, user_name, account_name, receiver, trans_type, formatted_amount,
-            description, date, sub_category, category
-        ))
+        (
+            transaction_id, user_name, account_name, receiver, trans_type,
+            amount, description, date, sub_category, category, pay_method
+        ) = transaction
 
-    return render_template('transactions/report.html', transactions=formatted_transactions, start_date=start_date,
-                           end_date=end_date)
+        # Format the amount as currency
+        formatted_amount = "{:,.2f}".format(amount)  # e.g., "1,234.56"
+
+        # Append the formatted transaction as a dictionary
+        formatted_transactions.append({
+            'transaction_id': transaction_id,
+            'user_name': user_name,
+            'account_name': account_name,
+            'receiver': receiver,
+            'trans_type': trans_type,
+            'amount': formatted_amount,
+            'description': description,
+            'date': date,
+            'sub_category': sub_category,
+            'category': category,
+            'pay_method': pay_method,
+        })
+
+    # Render the template with formatted transactions
+    return render_template(
+        'transactions/report.html',
+        transactions=formatted_transactions,
+        start_date=start_date,
+        end_date=end_date
+    )
+
+
 
 
 @app.route('/download_pdf', methods=['GET'])
@@ -743,7 +747,8 @@ def download_pdf():
             t.description AS transaction_description,
             t.date AS transaction_date,
             sc.name AS sub_category_name,
-            c.name AS category_name
+            c.name AS category_name,
+            t.pay_method AS transaction_pay_method
         FROM 
             transactions t
             JOIN users u ON t.user_id = u.id
@@ -761,13 +766,17 @@ def download_pdf():
     cur.close()
 
     # Headers for the table
-    headers = ["#", "Name", "Account", "Receiver", "Type", "Amount", "Description", "Date", "Category", "Subcategory"]
+    headers = [
+        "#", "Name", "Account", "Receiver", "Type",
+        "Amount", "Description", "Date", "Category",
+        "Subcategory", "Pay Method"
+    ]
     font_name = "Helvetica"
     font_size = 10
 
     # Calculate column widths
-    col_widths = [stringWidth("#", font_name, font_size) + 10]  # Initial width for the auto-increment column
-    for header in headers[1:]:  # Skip "#" (already initialized)
+    col_widths = [stringWidth("#", font_name, font_size) + 10]  # Initial width for auto-increment column
+    for header in headers[1:]:
         col_widths.append(stringWidth(header, font_name, font_size) + 20)
 
     for idx, t in enumerate(transactions, start=1):  # Add index for auto-increment
@@ -781,6 +790,10 @@ def download_pdf():
         col_widths[7] = max(col_widths[7], stringWidth(t[7].strftime("%Y-%m-%d"), font_name, font_size) + 10)
         col_widths[8] = max(col_widths[8], stringWidth(t[9], font_name, font_size) + 10)
         col_widths[9] = max(col_widths[9], stringWidth(t[8], font_name, font_size) + 10)
+        col_widths[10] = max(col_widths[10], stringWidth(t[10], font_name, font_size) + 10)
+
+    # Add 30px padding to the rightmost column
+    col_widths[-1] += 30
 
     # Prepare table data
     data = [headers]
@@ -796,6 +809,7 @@ def download_pdf():
             t[7].strftime("%Y-%m-%d") if isinstance(t[7], datetime) else str(t[7]),  # Date
             t[9],  # Category
             t[8],  # Subcategory
+            t[10],  # Pay Method
         ]
         data.append(row)
 
@@ -837,8 +851,6 @@ def download_pdf():
         download_name=f"Transaction_Report_{start_date}_TO_{end_date}.pdf",
         mimetype="application/pdf",
     )
-
-# --------------------------------- payment method crud -----------------------------------------------
 
 
 @app.route('/payment-method')
@@ -896,6 +908,7 @@ def delete_payment_method(id):
     cursor.close()
     flash('Payment method deleted successful', 'success')
     return redirect(url_for('payment_methods'))
+
 
 if __name__ == "__main__":
     app.run(debug=True)
