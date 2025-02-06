@@ -1,4 +1,4 @@
-Wallet Web Application
+#Wallet Web Application
 
 This project is a wallet web application developed as a solution for managing personal finances. 
 The application allows users to track transactions,generate reports, set budgets, and visualize financial summaries.
